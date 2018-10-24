@@ -1,12 +1,13 @@
 package com.github.britter.junit.jupiter.api.extension;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.TestInstance.Lifecycle;
 
-public interface TestClass {
+public interface TestClass extends TestElement {
 
     Lifecycle getLifecycle();
 

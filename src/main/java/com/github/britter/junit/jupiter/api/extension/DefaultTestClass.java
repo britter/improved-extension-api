@@ -5,6 +5,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.util.ReflectionUtils;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,7 +62,7 @@ class DefaultTestClass implements TestClass {
     public Stream<TestField> getFields() {
         return Arrays.stream(testClass.getDeclaredFields())
                 .filter(ReflectionUtils::isStatic)
-                .map(StaticField::new);
+                .map(f -> DefaultTestField.staticField(f, getRawTestClass()));
     }
 
     @Override
@@ -73,5 +74,42 @@ class DefaultTestClass implements TestClass {
     @Override
     public Class<?> getRawTestClass() {
         return testClass;
+    }
+
+    @Override
+    public String getName() {
+        return testClass.getName();
+    }
+
+    @Override
+    public boolean hasName(String name) {
+        return getName().equals(name);
+    }
+
+    @Override
+    public boolean isAnnotated(Class<? extends Annotation> annotation) {
+        return AnnotationSupport.isAnnotated(testClass, annotation);
+    }
+
+    @Override
+    public <A extends Annotation> Optional<A> getAnnotation(Class<A> annotationType) {
+        return AnnotationSupport.findAnnotation(testClass, annotationType);
+    }
+
+    @Override
+    public <A extends Annotation> Optional<A> getAnnotationFromHierachy(Class<A> annotationType) {
+        return getAnnotation(annotationType).isPresent()
+                ? getAnnotation(annotationType)
+                : getAnnotationFromOuterClassChain(annotationType);
+    }
+
+    private <A extends Annotation> Optional<A> getAnnotationFromOuterClassChain(Class<A> annotationType) {
+        // FIXME could be simplified using Java 9 Optional::stream
+        return getOuterClassChain()
+                .stream()
+                .map(clazz -> clazz.getAnnotation(annotationType))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
     }
 }

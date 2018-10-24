@@ -2,11 +2,11 @@ package com.github.britter.junit.jupiter.api.extension;
 
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
-import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+// TODO does it make sense to have this extend TestElement?
 public interface TestInstance {
 
     Lifecycle getLifecycle();

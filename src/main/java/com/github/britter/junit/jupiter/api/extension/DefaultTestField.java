@@ -60,6 +60,17 @@ class DefaultTestField implements TestField {
     }
 
     @Override
+    public <A extends Annotation> Optional<A> getAnnotation(Class<A> annotationType) {
+        return AnnotationSupport.findAnnotation(testField, annotationType);
+    }
+
+    @Override
+    public <A extends Annotation> Optional<A> getAnnotationFromHierachy(Class<A> annotationType) {
+        // TODO need to have access to the containing TestClass
+        return Optional.empty();
+    }
+
+    @Override
     public boolean isPublic() {
         return ReflectionUtils.isPublic(testField);
     }

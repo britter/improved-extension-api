@@ -1,6 +1,10 @@
 package com.github.britter.junit.jupiter.api.extension;
 
+import org.junit.platform.commons.support.AnnotationSupport;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 public class DefaultTestMethod implements TestMethod {
 
@@ -29,5 +33,30 @@ public class DefaultTestMethod implements TestMethod {
     @Override
     public Method getRawTestMethod() {
         return testMethod;
+    }
+
+    @Override
+    public String getName() {
+        return testMethod.getName();
+    }
+
+    @Override
+    public boolean hasName(String name) {
+        return getName().equals(name);
+    }
+
+    @Override
+    public boolean isAnnotated(Class<? extends Annotation> annotation) {
+        return AnnotationSupport.isAnnotated(testMethod, annotation);
+    }
+
+    @Override
+    public <A extends Annotation> Optional<A> getAnnotation(Class<A> annotationType) {
+        return AnnotationSupport.findAnnotation(testMethod, annotationType);
+    }
+
+    @Override
+    public <A extends Annotation> Optional<A> getAnnotationFromHierachy(Class<A> annotationType) {
+        return getAnnotation(annotationType).isPresent() ? getAnnotation(annotationType) : testClass.getAnnotationFromHierachy(annotationType);
     }
 }

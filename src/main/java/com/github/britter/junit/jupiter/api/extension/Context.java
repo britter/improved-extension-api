@@ -2,6 +2,7 @@ package com.github.britter.junit.jupiter.api.extension;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;

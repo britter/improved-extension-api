@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Optional;
 
-public interface TestField {
+public interface TestField extends TestElement {
 
     String getName();
 
