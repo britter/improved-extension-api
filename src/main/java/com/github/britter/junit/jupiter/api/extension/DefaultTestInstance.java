@@ -39,31 +39,31 @@ class DefaultTestInstance implements TestInstance {
 
     @Override
     public Optional<TestInstance> getOuterMostInstance() {
-        List<TestInstance> chain = getOuterInstanceChain();
-        return chain.isEmpty() ? Optional.empty() : Optional.of(chain.get(chain.size() - 1));
+        Stream<TestInstance> chain = getOuterInstanceHierarchy();
+        return chain.reduce((first, second) -> second);
     }
 
     @Override
-    public List<TestInstance> getOuterInstanceChain() {
+    public Stream<TestInstance> getOuterInstanceHierarchy() {
         List<TestInstance> outerInstances = new ArrayList<>();
         Optional<TestInstance> outerInstance = getOuterInstance();
         while(outerInstance.isPresent()) {
             outerInstances.add(outerInstance.get());
             outerInstance = outerInstance.flatMap(TestInstance::getOuterInstance);
         }
-        return outerInstances;
+        return outerInstances.stream();
     }
 
     @Override
     public Stream<TestField> getFields() {
         return Arrays.stream(testInstance.getClass().getDeclaredFields())
                 .filter(ReflectionUtils::isNotStatic)
-                .map(f -> new DefaultTestField(f, testInstance));
+                .map(f -> DefaultTestField.instanceField(f, testInstance));
     }
 
     @Override
     public Stream<TestField> getFieldsFromHierachy() {
-        return getOuterInstanceChain().stream().flatMap(TestInstance::getFields);
+        return getOuterInstanceHierarchy().flatMap(TestInstance::getFields);
     }
 
     @Override

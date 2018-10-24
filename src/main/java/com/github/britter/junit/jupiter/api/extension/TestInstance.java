@@ -2,7 +2,6 @@ package com.github.britter.junit.jupiter.api.extension;
 
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -44,7 +43,7 @@ public interface TestInstance {
      *
      * @return the chain of outer test instances
      */
-    List<TestInstance> getOuterInstanceChain();
+    Stream<TestInstance> getOuterInstanceHierarchy();
 
     /**
      * Get the instance fields declared in the class of this test instance.

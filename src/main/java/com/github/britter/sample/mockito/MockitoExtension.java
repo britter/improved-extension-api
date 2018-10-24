@@ -138,7 +138,7 @@ public class MockitoExtension implements BeforeEachCallback, AfterEachCallback, 
     public void beforeEach(final TestInstanceContext context) {
         Set<Object> testInstances = new LinkedHashSet<>();
         testInstances.add(context.getTestInstance().getRawTestInstance());
-        testInstances.addAll(context.getTestInstance().getOuterInstanceChain());
+        context.getTestInstance().getOuterInstanceHierarchy().forEach(testInstances::add);
 
         Strictness actualStrictness = context.getTestClass().getAnnotationFromHierachy(MockitoSettings.class)
                 .map(MockitoSettings::strictness)

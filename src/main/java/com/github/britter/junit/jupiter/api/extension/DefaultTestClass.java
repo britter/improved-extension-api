@@ -43,19 +43,19 @@ class DefaultTestClass implements TestClass {
 
     @Override
     public Optional<TestClass> getOuterMostClass() {
-        List<TestClass> chain = getOuterClassChain();
-        return chain.isEmpty() ? Optional.empty() : Optional.of(chain.get(chain.size() - 1));
+        Stream<TestClass> chain = getOuterClassHierarchy();
+        return chain.reduce((first, second) -> second);
     }
 
     @Override
-    public List<TestClass> getOuterClassChain() {
+    public Stream<TestClass> getOuterClassHierarchy() {
         List<TestClass> outerClasses = new ArrayList<>();
         Optional<TestClass> outerClass = getOuterClass();
         while(outerClass.isPresent()) {
             outerClasses.add(outerClass.get());
             outerClass = outerClass.flatMap(TestClass::getOuterClass);
         }
-        return outerClasses;
+        return outerClasses.stream();
     }
 
     @Override
@@ -68,7 +68,7 @@ class DefaultTestClass implements TestClass {
     @Override
     public Stream<TestField> getFieldsFromHierachy() {
         // TODO does this work? To get the field value we probably need the class where the field is defined...
-        return getOuterClassChain().stream().flatMap(TestClass::getFields);
+        return getOuterClassHierarchy().flatMap(TestClass::getFields);
     }
 
     @Override
@@ -105,8 +105,7 @@ class DefaultTestClass implements TestClass {
 
     private <A extends Annotation> Optional<A> getAnnotationFromOuterClassChain(Class<A> annotationType) {
         // FIXME could be simplified using Java 9 Optional::stream
-        return getOuterClassChain()
-                .stream()
+        return getOuterClassHierarchy()
                 .map(clazz -> clazz.getAnnotation(annotationType))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
