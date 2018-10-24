@@ -6,4 +6,5 @@ repositories {
 
 dependencies {
     compile 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    compile 'org.testcontainers:testcontainers:1.9.1'
 }
